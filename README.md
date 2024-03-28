@@ -1,5 +1,5 @@
 <div align="center">
-    <img src=".github/grove_logo.png" alt="Pocket Network logo" width="600"/>
+    <img src="grove_logo.png" alt="Pocket Network logo" width="600"/>
 </div>
 <br/>
 
