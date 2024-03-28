@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  title: Ethereum RPC API
+  description: This is an Ethereum blockchain JSON-RPC API spec designed for the `eth_getBalance` method.
+  version: 1.0.0
+  externalDocs:
+    url: "https://docs.grove.city"
+  license:
+    name: MIT License
+    url: "https://github.com/pokt-foundation/grove-path/blob/main/LICENSE.md"
+servers:
+  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Ethereum Mainnet RPC Server
+  - url: https://eth-archival.rpc.grove.city/v1/7ebb2846
+    description: Ethereum Archival RPC Server
+  - url: https://arbitrum-one.rpc.grove.city/v1/7ebb2846
+    description: Arbitrum Mainnet RPC Server
+  - url: https://avax-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Avalanche Mainnet RPC Server
+  - url: https://avax-archival.rpc.grove.city/v1/7ebb2846
+    description: Avalanche Archival RPC Server
+  - url: https://base-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Base Mainnet RPC Server
+  - url: https://bsc-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Binance Smart Chain Mainnet RPC Server
+  - url: https://bsc-archival.rpc.grove.city/v1/7ebb2846
+    description: Binance Smart Chain Archival RPC Server
+  - url: https://boba-mainnet.rpc.grove.city/v1/7ebb2846
+    description: BOBA Mainnet RPC Server
+  - url: https://celo-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Celo Mainnet RPC Server
+  - url: https://evmos-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Evmos Mainnet RPC Server
+  - url: https://fantom-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Fantom Mainnet RPC Server
+  - url: https://fuse-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Fuse Mainnet RPC Server
+  - url: https://gnosischain-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Gnosis Mainnet RPC Server
+  - url: https://gnosischain-archival.rpc.grove.city/v1/7ebb2846
+    description: Gnosis Archival RPC Server
+  - url: https://gnosischain-archival.rpc.grove.city/v1/7ebb2846
+    description: Gnosis Archival RPC Server
+  - url: https://harmony-0.rpc.grove.city/v1/7ebb2846
+    description: Harmony 0 RPC Server
+  - url: https://iotex-mainnet.rpc.grove.city/v1/7ebb2846
+    description: IoTeX Mainnet RPC Server
+  - url: https://kava-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Kava Mainnet RPC Server
+  - url: https://kava-mainnet-archival.rpc.grove.city/v1/7ebb2846
+    description: Kava Archival RPC Server
+  - url: https://klaytn-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Klaytn Mainnet RPC Server
+  - url: https://metis-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Metis Mainnet RPC Server
+  - url: https://moonbeam-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Moonbeam Mainnet RPC Server
+  - url: https://moonriver-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Moonriver Mainnet RPC Server
+  - url: https://oasys-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Oasys Mainnet RPC Server
+  - url: https://oasys-mainnet-archival.rpc.grove.city/v1/7ebb2846
+    description: Oasys Archival RPC Server
+  - url: https://oKc-mainnet.rpc.grove.city/v1/7ebb2846
+    description: OKC Mainnet RPC Server
+  - url: https://optimism-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Optimism Mainnet RPC Server
+  - url: https://optimism-archival.rpc.grove.city/v1/7ebb2846
+    description: Optimism Archival RPC Server
+  - url: https://osmosis-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Osmosis Mainnet RPC Server
+  - url: https://poly-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Polygon Mainnet RPC Server
+  - url: https://poly-archival.rpc.grove.city/v1/7ebb2846
+    description: Polygon Archival RPC Server
+  - url: https://scroll-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Scroll Mainnet RPC Server
+paths:
+  /:
+    post:
+      operationId: ethGetBalance
+      summary: Returns the balance of the account of given address.
+      tags:
+        - Ethereum RPC
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: "2.0"
+                method:
+                  type: string
+                  example: "eth_getBalance"
+                params:
+                  type: array
+                  items:
+                    oneOf:
+                      - type: string
+                        description: Account address in hexadecimal format.
+                      - type: string
+                        description: Block parameter (e.g., 'latest', 'earliest', block number in hex).
+                  minItems: 1
+                  example:
+                    ["0x407d73d8a49eeb85d32cf465507dd71d507100c1", "latest"]
+                id:
+                  type: integer
+                  example: 1
+              required:
+                - jsonrpc
+                - method
+                - params
+                - id
+      responses:
+        "200":
+          description: A JSON object containing the balance of the account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                  id:
+                    type: integer
+                  result:
+                    type: string
+                required:
+                  - jsonrpc
+                  - id
+                  - result
