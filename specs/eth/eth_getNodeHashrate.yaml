@@ -4,7 +4,7 @@ info:
   description: This is a hypothetical Grove Ethereum Node JSON-RPC API spec for retrieving hashrate.
   version: 1.0.0
 servers:
-  - url: https://eth-mainnet.rpc.grove.city/v1/<UID>  # Replace with actual URL if different
+  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846  # Replace with actual URL if different
     description: Grove Ethereum Mainnet RPC Server
 paths:
   /:
