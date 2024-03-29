@@ -9,7 +9,7 @@ servers:
 paths:
   /:
     post:
-      operationId: hashrate
+      operationId: eth_hashrate
       summary: Returns the hashrate of a given Ethereum node.
       tags:
         - Ethereum Node
@@ -25,7 +25,7 @@ paths:
                   example: '2.0'
                 method:
                   type: string
-                  example: 'hashrate'  # Replace with actual method name if different
+                  example: 'eth_hashrate'  # Replace with actual method name if different
                 params:
                   type: array
                   items:
