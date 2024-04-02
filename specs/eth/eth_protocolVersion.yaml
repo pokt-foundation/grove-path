@@ -43,8 +43,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  # Grove API does not currently support this method
-                  # - $ref: '#/components/schemas/SuccessResponse'
+                  - $ref: "#/components/schemas/SuccessResponse"
                   - $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
