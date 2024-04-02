@@ -55,6 +55,13 @@ components:
           example: "myId"
     SuccessResponse:
       type: object
+      description: |
+        The precise return data varies between client implementations. All clients return False when the node is not syncing, and all clients return the following fields.
+        Object|Boolean, An object with sync status data or FALSE, when not syncing:
+          startingBlock: QUANTITY - The block at which the import started (will only be reset, after the sync reached his head)
+          currentBlock: QUANTITY - The current block, same as eth_blockNumber
+          highestBlock: QUANTITY - The estimated highest block
+        However, the individual clients may also provide additional data.
       properties:
         id:
           $ref: "#/components/schemas/IdType"
