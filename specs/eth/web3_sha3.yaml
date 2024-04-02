@@ -1,18 +1,16 @@
 openapi: 3.0.0
 info:
-  title: Grove Ethereum Node API
-  description: This is a hypothetical Grove Ethereum Node JSON-RPC API spec for retrieving hashrate.
+  title: Ethereum JSON-RPC API
+  description: Ethereum blockchain JSON-RPC API spec designed for the `web3_sha3` method.
   version: 1.0.0
 servers:
-  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846  # Replace with actual URL if different
-    description: Grove Ethereum Mainnet RPC Server
+  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Ethereum Mainnet RPC Server
 paths:
   /:
     post:
-      operationId: eth_hashrate
-      summary: Returns the hashrate of a given Ethereum node.
-      tags:
-        - Ethereum Node
+      operationId: web3_sha3
+      summary: Calculates the Keccak-256 hash of the given data.
       requestBody:
         required: true
         content:
@@ -22,44 +20,30 @@ paths:
               properties:
                 jsonrpc:
                   type: string
-                  example: '2.0'
+                  example: "2.0"
                 method:
                   type: string
                   enum:
-                    -  'eth_hashrate'
-                  example: 'eth_hashrate'
+                    - "web3_sha3"
+                  example: "web3_sha3"
                 params:
                   type: array
                   items:
                     type: string
-                    description: Ethereum node address in hexadecimal format.
-                  minItems: 1
-                  example: ["0x<NODE_ADDRESS>"]
+                  example: ["0x68656c6c6f20776f726c64"]
                 id:
-                  type: integer
-                  example: 1
-        required:
-          - jsonrpc
-          - method
-          - params
-          - id
+                  oneOf:
+                    - type: integer
+                      example: 1
+                    - type: string
+                      example: "myId"
+              required:
+                - jsonrpc
+                - method
+                - id
       responses:
-        '200':
-          description: A JSON object containing the hashrate of the node
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  jsonrpc:
-                    type: string
-                  id:
-                    type: integer
-                  result:
-                    type: string
-                    description: Hashrate of the Ethereum node in HEX (e.g., 0x1234abcd)
-        default:
-          description: An error response
+        "200":
+          description: Response from the server.
           content:
             application/json:
               schema:
@@ -72,16 +56,12 @@ components:
     SuccessResponse:
       type: object
       properties:
-        jsonrpc:
-          type: string
         id:
           type: integer
+        jsonrpc:
+          type: string
         result:
           type: string
-      required:
-        - jsonrpc
-        - id
-        - result
     ErrorResponse:
       type: object
       properties:
