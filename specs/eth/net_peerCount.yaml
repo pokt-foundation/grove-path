@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Ethereum JSON-RPC API
-  description: Ethereum blockchain JSON-RPC API spec designed for the `web3_clientVersion` method.
+  description: Ethereum blockchain JSON-RPC API spec designed for the `net_peerCount` method.
   version: 1.0.0
 servers:
   - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846
@@ -9,8 +9,8 @@ servers:
 paths:
   /:
     post:
-      operationId: web3_clientVersion
-      summary: Gets the current client version.
+      operationId: net_peerCount
+      summary: Returns number of peers currently connected to the client.
       requestBody:
         required: true
         content:
@@ -24,8 +24,8 @@ paths:
                 method:
                   type: string
                   enum:
-                    - "web3_clientVersion"
-                  example: "web3_clientVersion"
+                    - "net_peerCount"
+                  example: "net_peerCount"
                 params:
                   type: array
                   items: {}
@@ -63,6 +63,7 @@ components:
           type: string
         result:
           type: string
+          example: "0x2" # 2
     ErrorResponse:
       type: object
       properties:

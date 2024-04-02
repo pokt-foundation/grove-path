@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Ethereum JSON-RPC API
-  description: Ethereum blockchain JSON-RPC API spec designed for the `web3_clientVersion` method.
+  description: Ethereum blockchain JSON-RPC API spec designed for the `net_listening` method.
   version: 1.0.0
 servers:
   - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846
@@ -9,8 +9,8 @@ servers:
 paths:
   /:
     post:
-      operationId: web3_clientVersion
-      summary: Gets the current client version.
+      operationId: net_listening
+      summary: Returns true if client is actively listening for network connections.
       requestBody:
         required: true
         content:
@@ -24,8 +24,8 @@ paths:
                 method:
                   type: string
                   enum:
-                    - "web3_clientVersion"
-                  example: "web3_clientVersion"
+                    - "net_listening"
+                  example: "net_listening"
                 params:
                   type: array
                   items: {}
@@ -62,7 +62,7 @@ components:
         jsonrpc:
           type: string
         result:
-          type: string
+          type: boolean
     ErrorResponse:
       type: object
       properties:
