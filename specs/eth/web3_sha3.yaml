@@ -32,15 +32,12 @@ paths:
                     type: string
                   example: ["0x68656c6c6f20776f726c64"]
                 id:
-                  oneOf:
-                    - type: integer
-                      example: 1
-                    - type: string
-                      example: "myId"
+                  $ref: "#/components/schemas/IdType"
               required:
                 - jsonrpc
                 - method
                 - id
+                - params
       responses:
         "200":
           description: Response from the server.
@@ -53,11 +50,17 @@ paths:
                   - $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
+    IdType:
+      oneOf:
+        - type: integer
+          example: 1
+        - type: string
+          example: "myId"
     SuccessResponse:
       type: object
       properties:
         id:
-          type: integer
+          $ref: "#/components/schemas/IdType"
         jsonrpc:
           type: string
         result:
@@ -66,7 +69,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          $ref: "#/components/schemas/IdType"
         jsonrpc:
           type: string
         error:

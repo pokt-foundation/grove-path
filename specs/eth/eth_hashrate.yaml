@@ -4,7 +4,7 @@ info:
   description: This is a hypothetical Grove Ethereum Node JSON-RPC API spec for retrieving hashrate.
   version: 1.0.0
 servers:
-  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846  # Replace with actual URL if different
+  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846 # Replace with actual URL if different
     description: Grove Ethereum Mainnet RPC Server
 paths:
   /:
@@ -22,12 +22,12 @@ paths:
               properties:
                 jsonrpc:
                   type: string
-                  example: '2.0'
+                  example: "2.0"
                 method:
                   type: string
                   enum:
-                    -  'eth_hashrate'
-                  example: 'eth_hashrate'
+                    - "eth_hashrate"
+                  example: "eth_hashrate"
                 params:
                   type: array
                   items:
@@ -36,30 +36,15 @@ paths:
                   minItems: 1
                   example: ["0x<NODE_ADDRESS>"]
                 id:
-                  type: integer
-                  example: 1
-        required:
-          - jsonrpc
-          - method
-          - params
-          - id
+                  $ref: "#/components/schemas/IdType"
+              required:
+                - jsonrpc
+                - method
+                - params
+                - id
       responses:
-        '200':
+        "200":
           description: A JSON object containing the hashrate of the node
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  jsonrpc:
-                    type: string
-                  id:
-                    type: integer
-                  result:
-                    type: string
-                    description: Hashrate of the Ethereum node in HEX (e.g., 0x1234abcd)
-        default:
-          description: An error response
           content:
             application/json:
               schema:
@@ -69,15 +54,22 @@ paths:
                   - $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
+    IdType:
+      oneOf:
+        - type: integer
+          example: 1
+        - type: string
+          example: "myId"
     SuccessResponse:
       type: object
       properties:
         jsonrpc:
           type: string
         id:
-          type: integer
+          $ref: "#/components/schemas/IdType"
         result:
           type: string
+          description: Hashrate of the Ethereum node in HEX (e.g., 0x1234abcd)
       required:
         - jsonrpc
         - id
@@ -86,7 +78,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          $ref: "#/components/schemas/IdType"
         jsonrpc:
           type: string
         error:

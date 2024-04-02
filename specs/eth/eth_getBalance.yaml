@@ -130,6 +130,12 @@ paths:
                   - $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
+    IdType:
+      oneOf:
+        - type: integer
+          example: 1
+        - type: string
+          example: "myId"
     SuccessResponse:
       type: object
       properties:
