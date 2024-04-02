@@ -55,6 +55,7 @@ components:
           example: "myId"
     SuccessResponse:
       type: object
+      description: String - The current Ethereum protocol version
       properties:
         id:
           $ref: "#/components/schemas/IdType"
