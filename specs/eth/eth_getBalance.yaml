@@ -100,21 +100,20 @@ paths:
                 params:
                   type: array
                   items:
-                    oneOf:
-                      - type: string
-                        pattern: "^0x[a-fA-F0-9]{40}$"
-                        description: Account address in hexadecimal format.
-                      - oneOf:
-                          - type: string
-                            description: HEX String - an integer block number
-                          - type: string
-                            enum:
-                              - "latest"
-                              - "earliest"
-                              - "pending"
-                              - "safe"
-                              - "finalized"
-                            description: Block parameter (e.g., 'latest', 'earliest', block number in hex).
+                    - type: string
+                      pattern: "^0x[a-fA-F0-9]{40}$"
+                      description: Account address in hexadecimal format.
+                    - oneOf:
+                        - type: string
+                          description: HEX String - an integer block number
+                        - type: string
+                          enum:
+                            - "latest"
+                            - "earliest"
+                            - "pending"
+                            - "safe"
+                            - "finalized"
+                          description: Block parameter (e.g., 'latest', 'earliest', block number in hex).
                   minItems: 2
                   maxItems: 2
                   example:
