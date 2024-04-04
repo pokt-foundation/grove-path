@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  title: Ethereum RPC API
+  description: Ethereum blockchain JSON-RPC API spec designed for the `eth_getBlockTransactionCountByHash` method.
+  version: 1.0.0
+  externalDocs:
+    url: "https://docs.grove.city"
+  license:
+    name: MIT License
+    url: "https://github.com/pokt-foundation/grove-path/blob/main/LICENSE.md"
+servers:
+  - url: https://eth-mainnet.rpc.grove.city/v1/7ebb2846
+    description: Ethereum Mainnet RPC Server
+paths:
+  /:
+    post:
+      operationId: eth_getBlockTransactionCountByHash
+      summary: Returns the number of transactions sent from an address.
+      tags:
+        - Ethereum RPC
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                  example: "2.0"
+                method:
+                  type: string
+                  enum:
+                    - "eth_getBlockTransactionCountByHash"
+                  example: "eth_getBlockTransactionCountByHash"
+                params:
+                  type: array
+                  items:
+                    - type: string
+                      pattern: "^0x[a-fA-F0-9]{64}$"
+                      description: The hash of a block
+                  minItems: 1
+                  maxItems: 1
+                  example:
+                    [
+                      "0xb903239f8543d04b5dc1ba6579132b143087c68db1b2168786408fcbce568238",
+                    ]
+                id:
+                  $ref: "#/components/schemas/IdType"
+              required:
+                - jsonrpc
+                - method
+                - params
+                - id
+      responses:
+        "200":
+          description: An integer of the number of transactions send from this address.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    IdType:
+      oneOf:
+        - type: integer
+          example: 1
+        - type: string
+          example: "myId"
+    SuccessResponse:
+      type: object
+      description: QUANTITY - integer of the number of transactions send from this address.
+      properties:
+        jsonrpc:
+          type: string
+        id:
+          $ref: "#/components/schemas/IdType"
+        result:
+          type: string
+          example: "0xb" # 11
+      required:
+        - jsonrpc
+        - id
+        - result
+    ErrorResponse:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdType"
+        jsonrpc:
+          type: string
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+            message:
+              type: string
+              example: "Method not found"
+            data:
+              oneOf:
+                - type: string
+                - type: object
+          required:
+            - code
+            - message
+      required:
+        - id
+        - jsonrpc
+        - error
