@@ -1,0 +1,138 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum JSON-RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_coinbase` method.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "eth_coinbase",
+        "summary": "Returns the client coinbase address.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["eth_coinbase"],
+                    "example": "eth_coinbase"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {},
+                    "example": []
+                  },
+                  "id": {
+                    "$ref": "#/components/schemas/IdType"
+                  }
+                },
+                "required": ["jsonrpc", "method", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response from the server.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "description": "DATA, 20 bytes - the current coinbase address.",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string",
+            "example": "0x407d73d8a49eeb85d32cf465507dd71d507100c1"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
+      }
+    }
+  }
+}

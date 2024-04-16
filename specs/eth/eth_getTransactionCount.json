@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum JSON-RPC API",
+    "description": "This OpenAPI specification outlines the `eth_getTransactionCount` method, which provides the number of transactions sent from a specified address.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://mainnet.infura.io/v3/{infura_project_id}",
+      "description": "Main Ethereum Network"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "getTransactionCount",
+        "summary": "Get transaction count",
+        "tags": ["Ethereum JSON-RPC"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "default": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "default": "eth_getTransactionCount"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": [
+                      {
+                        "type": "string",
+                        "description": "Address to check for transaction count."
+                      },
+                      {
+                        "type": "string",
+                        "description": "Block specifier, can be a block number or one of 'earliest', 'latest', or 'pending'."
+                      }
+                    ],
+                    "example": [
+                      "0x407d73d8a49eeb85d32cf465507dd71d507100c1",
+                      "latest"
+                    ]
+                  },
+                  "id": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with the number of transactions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "jsonrpc": {
+                      "type": "string",
+                      "default": "2.0"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "result": {
+                      "type": "string",
+                      "description": "The number of transactions sent from the address."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
