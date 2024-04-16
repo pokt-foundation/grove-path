@@ -1,0 +1,119 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum JSON-RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `net_version` method.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "net_version",
+        "summary": "Retrieves the current network version.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["net_version"],
+                    "example": "net_version"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {},
+                    "example": []
+                  },
+                  "id": {
+                    "$ref": "#/components/schemas/IdType"
+                  }
+                },
+                "required": ["jsonrpc", "method", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response from the server indicating the current network version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
+      }
+    }
+  }
+}
