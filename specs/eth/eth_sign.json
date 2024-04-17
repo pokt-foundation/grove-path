@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Ethereum RPC API",
-    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getBlockTransactionCountByNumber` method.",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_sign` method.",
     "version": "1.0.0"
   },
   "servers": [
@@ -14,8 +14,8 @@
   "paths": {
     "/": {
       "post": {
-        "operationId": "eth_getBlockTransactionCountByNumber",
-        "summary": "Returns the number of transactions in a block matching the given block number.",
+        "operationId": "eth_sign",
+        "summary": "The sign method calculates an Ethereum specific signature with: sign(keccak256('Ethereum Signed Message:' + len(message) + message))). By adding a prefix to the message makes the calculated signature recognizable as an Ethereum specific signature. This prevents misuse where a malicious dapp can sign arbitrary data (e.g. transaction) and use the signature to impersonate the victim. Note: the address to sign with must be unlocked.",
         "requestBody": {
           "required": true,
           "content": {
@@ -29,35 +29,29 @@
                   },
                   "method": {
                     "type": "string",
-                    "enum": ["eth_getBlockTransactionCountByNumber"],
-                    "example": "eth_getBlockTransactionCountByNumber"
+                    "enum": ["eth_sign"],
+                    "example": "eth_sign"
                   },
                   "params": {
                     "type": "array",
                     "items": [
                       {
-                        "oneOf": [
-                          {
-                            "type": "string",
-                            "description": "HEX String - an integer block number"
-                          },
-                          {
-                            "type": "string",
-                            "enum": [
-                              "latest",
-                              "earliest",
-                              "pending",
-                              "safe",
-                              "finalized"
-                            ],
-                            "description": "Block parameter (e.g., 'latest', 'earliest', block number in hex)."
-                          }
-                        ]
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{40}$",
+                        "description": "DATA, 20 Bytes - address"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]+$",
+                        "description": "DATA, N Bytes - message to sign"
                       }
                     ],
-                    "minItems": 1,
-                    "maxItems": 1,
-                    "example": ["0xe8"]
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "example": [
+                      "0x9b2055d370f73ec7d8a03e965129118dc8f5bf83",
+                      "0xdeadbeaf"
+                    ]
                   },
                   "id": {
                     "$ref": "#/components/schemas/IdType"
@@ -70,7 +64,6 @@
         },
         "responses": {
           "200": {
-            "description": "An integer of the number of transactions in this block.",
             "content": {
               "application/json": {
                 "schema": {
@@ -106,7 +99,7 @@
       },
       "SuccessResponse": {
         "type": "object",
-        "description": "QUANTITY - integer of the number of transactions in this block.",
+        "description": "DATA: Signature",
         "properties": {
           "jsonrpc": {
             "type": "string"
@@ -116,7 +109,7 @@
           },
           "result": {
             "type": "string",
-            "example": "0xa"
+            "example": "0xa3f20717a250c2b0b729b7e5becbff67fdaef7e0699da4de7ca5895b02a170a12d887fd3b17bfdce3481f10bea41f45ba9f709d39ce8325427b57afcfc994cee1b"
           }
         },
         "required": ["jsonrpc", "id", "result"]

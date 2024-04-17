@@ -34,11 +34,13 @@
                   },
                   "params": {
                     "type": "array",
-                    "items": {
-                      "type": "string",
-                      "pattern": "^0x[a-fA-F0-9]{64}$",
-                      "description": "The hash of a block"
-                    },
+                    "items": [
+                      {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{64}$",
+                        "description": "The hash of a block"
+                      }
+                    ],
                     "minItems": 1,
                     "maxItems": 1,
                     "example": [
