@@ -1,0 +1,268 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getUncleByBlockHashAndIndex` method.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "eth_getUncleByBlockHashAndIndex",
+        "summary": "Returns information about a uncle of a block by hash and uncle index position.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["eth_getUncleByBlockHashAndIndex"],
+                    "example": "eth_getUncleByBlockHashAndIndex"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": [
+                      {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{64}$",
+                        "description": "DATA, 32 Bytes - Hash of a block."
+                      },
+                      {
+                        "type": "string",
+                        "description": "QUANTITY - The uncle's index position."
+                      }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "example": [
+                      "0xc6ef2fc5426d6ad6fd9e2a26abeab0aa2411b7ab17f30a99d3cb96aed1d1055b",
+                      "0x0"
+                    ]
+                  },
+                  "id": {
+                    "$ref": "#/components/schemas/IdType"
+                  }
+                },
+                "required": ["jsonrpc", "method", "params", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "description": "Object - A block object, or null when no block was found. Note: An uncle doesn't contain individual transactions.",
+        "properties": {
+          "jsonrpc": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "string",
+                "description": "QUANTITY - the block number. null when its pending block.",
+                "nullable": true
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - hash of the block. null when its pending block.",
+                "nullable": true
+              },
+              "parentHash": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - hash of the parent block."
+              },
+              "nonce": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{16}$",
+                "description": "DATA, 8 Bytes - hash of the generated proof-of-work. null when its pending block.",
+                "nullable": true
+              },
+              "sha3Uncles": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - SHA3 of the uncles data in the block."
+              },
+              "logsBloom": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{512}$",
+                "description": "DATA, 256 Bytes - the bloom filter for the logs of the block. null when its pending block.",
+                "nullable": true
+              },
+              "transactionsRoot": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - the root of the transaction trie of the block."
+              },
+              "stateRoot": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - the root of the final state trie of the block."
+              },
+              "receiptsRoot": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - the root of the receipts trie of the block."
+              },
+              "miner": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{40}$",
+                "description": "DATA, 20 Bytes - the address of the beneficiary to whom the mining rewards were given."
+              },
+              "difficulty": {
+                "type": "string",
+                "description": "QUANTITY - integer of the difficulty for this block."
+              },
+              "totalDifficulty": {
+                "type": "string",
+                "description": "QUANTITY - integer of the total difficulty of the chain until this block."
+              },
+              "extraData": {
+                "type": "string",
+                "description": "DATA - the 'extra data' field of this block."
+              },
+              "size": {
+                "type": "string",
+                "description": "QUANTITY - integer the size of this block in bytes."
+              },
+              "gasLimit": {
+                "type": "string",
+                "description": "QUANTITY - the maximum gas allowed in this block."
+              },
+              "gasUsed": {
+                "type": "string",
+                "description": "QUANTITY - the total used gas by all transactions in this block."
+              },
+              "timestamp": {
+                "type": "string",
+                "description": "QUANTITY - the unix timestamp for when the block was collated."
+              },
+              "uncles": {
+                "type": "array",
+                "description": "Array - Array of uncle hashes.",
+                "items": [
+                  {
+                    "type": "string",
+                    "pattern": "^0x[a-fA-F0-9]{64}$",
+                    "description": "DATA, 32 Bytes - Hash of a block."
+                  }
+                ]
+              }
+            },
+            "nullable": true,
+            "example": {
+              "difficulty": "0x4ea3f27bc",
+              "extraData": "0x476574682f4c5649562f76312e302e302f6c696e75782f676f312e342e32",
+              "gasLimit": "0x1388",
+              "gasUsed": "0x0",
+              "hash": "0xdc0818cf78f21a8e70579cb46a43643f78291264dda342ae31049421c82d21ae",
+              "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "miner": "0xbb7b8287f3f0a933474a79eae42cbca977791171",
+              "mixHash": "0x4fffe9ae21f1c9e15207b1f472d5bbdd68c9595d461666602f2be20daf5e7843",
+              "nonce": "0x689056015818adbe",
+              "number": "0x1b4",
+              "parentHash": "0xe99e022112df268087ea7eafaf4790497fd21dbeeb6bd7a1721df161a6657a54",
+              "receiptsRoot": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+              "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+              "size": "0x220",
+              "stateRoot": "0xddc8b0234c2e0cad087c8b389aa7ef01f7d79b2570bccb77ce48648aa61c904d",
+              "timestamp": "0x55ba467c",
+              "totalDifficulty": "0x78ed983323d",
+              "transactionsRoot": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+              "uncles": []
+            }
+          }
+        },
+        "required": ["jsonrpc", "id", "result"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
+      }
+    }
+  }
+}
