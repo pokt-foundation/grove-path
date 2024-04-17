@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Ethereum RPC API",
-    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getTransactionByBlockNumberAndIndex` method.",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getTransactionReceipt` method.",
     "version": "1.0.0"
   },
   "servers": [
@@ -14,8 +14,8 @@
   "paths": {
     "/": {
       "post": {
-        "operationId": "eth_getTransactionByBlockNumberAndIndex",
-        "summary": "Returns information about a transaction by block number and transaction index position.",
+        "operationId": "eth_getTransactionReceipt",
+        "summary": "Returns the receipt of a transaction by transaction hash. Note That the receipt is not available for pending transactions.",
         "requestBody": {
           "required": true,
           "content": {
@@ -29,39 +29,23 @@
                   },
                   "method": {
                     "type": "string",
-                    "enum": ["eth_getTransactionByBlockNumberAndIndex"],
-                    "example": "eth_getTransactionByBlockNumberAndIndex"
+                    "enum": ["eth_getTransactionReceipt"],
+                    "example": "eth_getTransactionReceipt"
                   },
                   "params": {
                     "type": "array",
                     "items": [
                       {
-                        "oneOf": [
-                          {
-                            "type": "string",
-                            "description": "HEX String - an integer block number"
-                          },
-                          {
-                            "type": "string",
-                            "enum": [
-                              "latest",
-                              "earliest",
-                              "pending",
-                              "safe",
-                              "finalized"
-                            ],
-                            "description": "Block parameter (e.g., 'latest', 'earliest', block number in hex)."
-                          }
-                        ]
-                      },
-                      {
                         "type": "string",
-                        "description": "QUANTITY - integer of the transaction index position."
+                        "pattern": "^0x[a-fA-F0-9]{64}$",
+                        "description": "DATA, 32 Bytes - hash of a transaction"
                       }
                     ],
-                    "minItems": 2,
-                    "maxItems": 2,
-                    "example": ["0x9c47cf", "0x24"]
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "example": [
+                      "0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5"
+                    ]
                   },
                   "id": {
                     "$ref": "#/components/schemas/IdType"
@@ -109,7 +93,7 @@
       },
       "SuccessResponse": {
         "type": "object",
-        "description": "Object - A transaction object, or null when no transaction was found.",
+        "description": "Object - A transaction receipt object, or null when no receipt was found.",
         "properties": {
           "jsonrpc": {
             "type": "string"
@@ -121,42 +105,28 @@
             "type": "object",
             "description": "Transaction object",
             "properties": {
+              "transactionHash": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - hash of the transaction."
+              },
+              "transactionIndex": {
+                "type": "string",
+                "description": "QUANTITY - integer of the transactions index position in the block."
+              },
               "blockHash": {
                 "type": "string",
                 "pattern": "^0x[a-fA-F0-9]{64}$",
-                "description": "DATA, 32 Bytes - hash of the block where this transaction was in. null when its pending.",
-                "nullable": true
+                "description": "DATA, 32 Bytes - hash of the block where this transaction was in."
               },
               "blockNumber": {
                 "type": "string",
-                "description": "QUANTITY - block number where this transaction was in. null when its pending.",
-                "nullable": true
+                "description": "QUANTITY - block number where this transaction was in."
               },
               "from": {
                 "type": "string",
                 "pattern": "^0x[a-fA-F0-9]{40}$",
                 "description": "DATA, 20 Bytes - address of the sender."
-              },
-              "gas": {
-                "type": "string",
-                "description": "QUANTITY - gas provided by the sender."
-              },
-              "gasPrice": {
-                "type": "string",
-                "description": "QUANTITY - gas price provided by the sender in Wei."
-              },
-              "hash": {
-                "type": "string",
-                "pattern": "^0x[a-fA-F0-9]{64}$",
-                "description": "DATA, 32 Bytes - hash of the transaction."
-              },
-              "input": {
-                "type": "string",
-                "description": "DATA - the data send along with the transaction."
-              },
-              "nonce": {
-                "type": "string",
-                "description": "QUANTITY - the number of transactions made by the sender prior to this one."
               },
               "to": {
                 "type": "string",
@@ -164,44 +134,82 @@
                 "description": "DATA, 20 Bytes - address of the receiver. null when its a contract creation transaction.",
                 "nullable": true
               },
-              "transactionIndex": {
+              "cumulativeGasUsed": {
                 "type": "string",
-                "description": "QUANTITY - integer of the transactions index position in the block. null when its pending.",
+                "description": "QUANTITY - The total amount of gas used when this transaction was executed in the block."
+              },
+              "effectiveGasPrice": {
+                "type": "string",
+                "description": "QUANTITY - The sum of the base fee and tip paid per unit of gas."
+              },
+              "gasUsed": {
+                "type": "string",
+                "description": "QUANTITY - The amount of gas used by this specific transaction alone."
+              },
+              "contractAddress": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{40}$",
+                "description": "DATA, 20 Bytes - The contract address created, if the transaction was a contract creation, otherwise null.",
                 "nullable": true
               },
-              "value": {
+              "logs": {
                 "type": "string",
-                "description": "QUANTITY - value transferred in Wei."
+                "description": "Array - Array of log objects, which this transaction generated.",
+                "items": [
+                  {
+                    "AnyValue": {}
+                  }
+                ]
               },
-              "v": {
+              "logsBloom": {
                 "type": "string",
-                "description": "QUANTITY - ECDSA recovery id"
+                "pattern": "^0x[a-fA-F0-9]{512}$",
+                "description": "DATA, 256 Bytes - Bloom filter for light clients to quickly retrieve related logs."
               },
-              "r": {
+              "type": {
                 "type": "string",
-                "description": "QUANTITY - ECDSA signature r"
+                "description": "QUANTITY - integer of the transaction type, 0x0 for legacy transactions, 0x1 for access list types, 0x2 for dynamic fees."
               },
-              "s": {
+              "root": {
                 "type": "string",
-                "description": "QUANTITY - ECDSA signature s"
+                "description": "DATA 32 bytes of post-transaction stateroot (pre Byzantium). (optional)"
+              },
+              "status": {
+                "type": "string",
+                "description": "QUANTITY either 1 (success) or 0 (failure). (optional)"
               }
             },
+            "required": [
+              "transactionHash",
+              "transactionIndex",
+              "blockHash",
+              "blockNumber",
+              "from",
+              "to",
+              "cumulativeGasUsed",
+              "effectiveGasPrice",
+              "gasUsed",
+              "contractAddress",
+              "logs",
+              "logsBloom",
+              "type"
+            ],
             "nullable": true,
             "example": {
-              "blockHash": "0x1d59ff54b1eb26b013ce3cb5fc9dab3705b415a67127a003c3e61eb445bb8df2",
-              "blockNumber": "0x5daf3b",
-              "from": "0xa7d9ddbe1f17865597fbd27ec712455208b6b76d",
-              "gas": "0xc350",
-              "gasPrice": "0x4a817c800",
-              "hash": "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b",
-              "input": "0x68656c6c6f21",
-              "nonce": "0x15",
-              "to": "0xf02c1c8e6114b1dbe8937a39260b5b0a374432bb",
-              "transactionIndex": "0x41",
-              "value": "0xf3dbb76162000",
-              "v": "0x25",
-              "r": "0x1b5e176d927f8e9ab405058b2d2457392da3e20f328b16ddabcebc33eaac5fea",
-              "s": "0x4ba69724e8f69de52f0125ad8b3c5c2cef33019bac3249e2c0a2192766d1721c"
+              "blockHash": "0xa957d47df264a31badc3ae823e10ac1d444b098d9b73d204c40426e57f47e8c3",
+              "blockNumber": "0xeff35f",
+              "contractAddress": null,
+              "cumulativeGasUsed": "0xa12515",
+              "effectiveGasPrice": "0x5a9c688d4",
+              "from": "0x6221a9c005f6e47eb398fd867784cacfdcfff4e7",
+              "gasUsed": "0xb4c8",
+              "logs": [],
+              "logsBloom": "0x00...0",
+              "status": "0x1",
+              "to": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+              "transactionHash": "0x85d995eba9763907fdf35cd2034144dd9d53ce32cbec21349d4b12823c6860c5",
+              "transactionIndex": "0x66",
+              "type": "0x2"
             }
           }
         },

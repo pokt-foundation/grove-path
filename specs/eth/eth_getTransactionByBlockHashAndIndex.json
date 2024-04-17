@@ -150,7 +150,8 @@
               "to": {
                 "type": "string",
                 "pattern": "^0x[a-fA-F0-9]{40}$",
-                "description": "DATA, 20 Bytes - address of the receiver. null when its a contract creation transaction."
+                "description": "DATA, 20 Bytes - address of the receiver. null when its a contract creation transaction.",
+                "nullable": true
               },
               "transactionIndex": {
                 "type": "string",
