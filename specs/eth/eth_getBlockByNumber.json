@@ -1,0 +1,343 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getBlockByNumber` method.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "eth_getBlockByNumber",
+        "summary": "Returns information about a block by block number.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["eth_getBlockByNumber"],
+                    "example": "eth_getBlockByNumber"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": [
+                      {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "HEX String - an integer block number"
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "latest",
+                              "earliest",
+                              "pending",
+                              "safe",
+                              "finalized"
+                            ],
+                            "description": "Block parameter (e.g., 'latest', 'earliest', block number in hex)."
+                          }
+                        ]
+                      },
+                      {
+                        "type": "boolean",
+                        "description": "Boolean - If true it returns the full transaction objects, if false only the hashes of the transactions."
+                      }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "example": ["0x1b4", true]
+                  },
+                  "id": {
+                    "$ref": "#/components/schemas/IdType"
+                  }
+                },
+                "required": ["jsonrpc", "method", "params", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "description": "QUANTITY - the amount of gas used.",
+        "properties": {
+          "jsonrpc": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "string",
+                "description": "QUANTITY - the block number. null when its pending block.",
+                "nullable": true
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - hash of the block. null when its pending block.",
+                "nullable": true
+              },
+              "parentHash": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - hash of the parent block."
+              },
+              "nonce": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{16}$",
+                "description": "DATA, 8 Bytes - hash of the generated proof-of-work. null when its pending block.",
+                "nullable": true
+              },
+              "sha3Uncles": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - SHA3 of the uncles data in the block."
+              },
+              "logsBloom": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{512}$",
+                "description": "DATA, 256 Bytes - the bloom filter for the logs of the block. null when its pending block.",
+                "nullable": true
+              },
+              "transactionsRoot": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - the root of the transaction trie of the block."
+              },
+              "stateRoot": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - the root of the final state trie of the block."
+              },
+              "receiptsRoot": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{64}$",
+                "description": "DATA, 32 Bytes - the root of the receipts trie of the block."
+              },
+              "miner": {
+                "type": "string",
+                "pattern": "^0x[a-fA-F0-9]{40}$",
+                "description": "DATA, 20 Bytes - the address of the beneficiary to whom the mining rewards were given."
+              },
+              "difficulty": {
+                "type": "string",
+                "description": "QUANTITY - integer of the difficulty for this block."
+              },
+              "totalDifficulty": {
+                "type": "string",
+                "description": "QUANTITY - integer of the total difficulty of the chain until this block."
+              },
+              "extraData": {
+                "type": "string",
+                "description": "DATA - the 'extra data' field of this block."
+              },
+              "size": {
+                "type": "string",
+                "description": "QUANTITY - integer the size of this block in bytes."
+              },
+              "gasLimit": {
+                "type": "string",
+                "description": "QUANTITY - the maximum gas allowed in this block."
+              },
+              "gasUsed": {
+                "type": "string",
+                "description": "QUANTITY - the total used gas by all transactions in this block."
+              },
+              "timestamp": {
+                "type": "string",
+                "description": "QUANTITY - the unix timestamp for when the block was collated."
+              },
+              "transactions": {
+                "type": "array",
+                "description": "Array - Array of transaction objects, or 32 Bytes transaction hashes depending on the last given parameter.",
+                "items": [
+                  {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{64}$",
+                        "description": "DATA, 32 Bytes - Transaction hashes"
+                      },
+                      {
+                        "type": "object",
+                        "description": "Transaction object",
+                        "properties": {
+                          "blockHash": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{64}$",
+                            "description": "DATA, 32 Bytes - hash of the block where this transaction was in. null when its pending.",
+                            "nullable": true
+                          },
+                          "blockNumber": {
+                            "type": "string",
+                            "description": "QUANTITY - block number where this transaction was in. null when its pending.",
+                            "nullable": true
+                          },
+                          "from": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{40}$",
+                            "description": "DATA, 20 Bytes - address of the sender."
+                          },
+                          "gas": {
+                            "type": "string",
+                            "description": "QUANTITY - gas provided by the sender."
+                          },
+                          "gasPrice": {
+                            "type": "string",
+                            "description": "QUANTITY - gas price provided by the sender in Wei."
+                          },
+                          "hash": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{64}$",
+                            "description": "DATA, 32 Bytes - hash of the transaction."
+                          },
+                          "input": {
+                            "type": "string",
+                            "description": "DATA - the data send along with the transaction."
+                          },
+                          "nonce": {
+                            "type": "string",
+                            "description": "QUANTITY - the number of transactions made by the sender prior to this one."
+                          },
+                          "to": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{40}$",
+                            "description": "DATA, 20 Bytes - address of the receiver. null when its a contract creation transaction."
+                          },
+                          "transactionIndex": {
+                            "type": "string",
+                            "description": "QUANTITY - integer of the transactions index position in the block. null when its pending.",
+                            "nullable": true
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "QUANTITY - value transferred in Wei."
+                          },
+                          "v": {
+                            "type": "string",
+                            "description": "QUANTITY - ECDSA recovery id"
+                          },
+                          "r": {
+                            "type": "string",
+                            "description": "QUANTITY - ECDSA signature r"
+                          },
+                          "s": {
+                            "type": "string",
+                            "description": "QUANTITY - ECDSA signature s"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "uncles": {
+                "type": "array",
+                "description": "Array - Array of uncle hashes.",
+                "items": [
+                  {
+                    "type": "string",
+                    "pattern": "^0x[a-fA-F0-9]{64}$",
+                    "description": "DATA, 32 Bytes - Hash of a block."
+                  }
+                ]
+              }
+            },
+            "nullable": true,
+            "example": "0x5208"
+          }
+        },
+        "required": ["jsonrpc", "id", "result"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
+      }
+    }
+  }
+}
