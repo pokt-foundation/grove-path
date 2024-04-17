@@ -1,0 +1,192 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_estimateGas` method.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "eth_estimateGas",
+        "summary": "Generates and returns an estimate of how much gas is necessary to allow the transaction to complete. The transaction will not be added to the blockchain. Note that the estimate may be significantly more than the amount of gas actually used by the transaction, for a variety of reasons including EVM mechanics and node performance.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["eth_estimateGas"],
+                    "example": "eth_estimateGas"
+                  },
+                  "params": {
+                    "type": "array",
+                    "description": "See eth_call parameters, except that all properties are optional. If no gas limit is specified geth uses the block gas limit from the pending block as an upper bound. As a result the returned estimate might not be enough to executed the call/transaction when the amount of gas is higher than the pending block gas limit.",
+                    "items": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{40}$",
+                            "description": "DATA, 20 Bytes - The address the transaction is sent from. (optional)"
+                          },
+                          "to": {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{40}$",
+                            "description": "DATA, 20 Bytes - The address the transaction is directed to. (optional)"
+                          },
+                          "gas": {
+                            "type": "string",
+                            "description": "QUANTITY - Gas provided for the transaction execution. (optional, default: 90000)"
+                          },
+                          "gasPrice": {
+                            "type": "string",
+                            "description": "QUANTITY - Gas price provided by the sender. (optional, default: To-Be-Determined) "
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "QUANTITY - Value transferred for the transaction. (optional)"
+                          },
+                          "input": {
+                            "type": "string",
+                            "description": "DATA - Hash of the method signature and encoded parameters. For details see Ethereum Contract ABI in the Solidity documentation(opens in a new tab). (optional)"
+                          }
+                        }
+                      },
+                      {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "HEX String - an integer block number"
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "latest",
+                              "earliest",
+                              "pending",
+                              "safe",
+                              "finalized"
+                            ],
+                            "description": "Block parameter (e.g., 'latest', 'earliest', block number in hex)."
+                          }
+                        ]
+                      }
+                    ],
+                    "minItems": 0,
+                    "maxItems": 2,
+                    "example": []
+                  },
+                  "id": {
+                    "$ref": "#/components/schemas/IdType"
+                  }
+                },
+                "required": ["jsonrpc", "method", "params", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "description": "QUANTITY - the amount of gas used.",
+        "properties": {
+          "jsonrpc": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "result": {
+            "type": "string",
+            "example": "0x5208"
+          }
+        },
+        "required": ["jsonrpc", "id", "result"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
+      }
+    }
+  }
+}
