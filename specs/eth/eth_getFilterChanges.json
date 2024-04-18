@@ -1,0 +1,230 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ethereum RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getFilterChanges` method.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "operationId": "eth_getFilterChanges",
+        "summary": "Polling method for a filter, which returns an array of logs which occurred since last poll.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "example": "2.0"
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["eth_getFilterChanges"],
+                    "example": "eth_getFilterChanges"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": [
+                      {
+                        "type": "string",
+                        "description": "QUANTITY - the filter id."
+                      }
+                    ],
+                    "minItems": 1,
+                    "maxItems": 1,
+                    "example": ["0x16"]
+                  },
+                  "id": {
+                    "$ref": "#/components/schemas/IdType"
+                  }
+                },
+                "required": ["jsonrpc", "method", "params", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "description": "Array - Array of log objects, or an empty array if nothing has changed since last poll.",
+        "properties": {
+          "jsonrpc": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "result": {
+            "type": "array",
+            "items": [
+              {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^0x[a-fA-F0-9]{64}$",
+                    "description": "For filters created with eth_newBlockFilter the return are block hashes (DATA, 32 Bytes), e.g. ['0x3454645634534...']."
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^0x[a-fA-F0-9]{64}$",
+                    "description": "For filters created with eth_newPendingTransactionFilter the return are transaction hashes (DATA, 32 Bytes), e.g. ['0x6345343454645...']."
+                  },
+                  {
+                    "type": "object",
+                    "description": "For filters created with eth_newFilter logs are objects with following params:",
+                    "properties": {
+                      "removed": {
+                        "type": "boolean",
+                        "description": "BOOLEAN - - true when the log was removed, due to a chain reorganization. false if its a valid log."
+                      },
+                      "logIndex": {
+                        "type": "string",
+                        "description": "QUANTITY - integer of the log index position in the block. null when its pending log.",
+                        "nullable": true
+                      },
+                      "transactionIndex": {
+                        "type": "string",
+                        "description": "QUANTITY - integer of the transactions index position log was created from. null when its pending log.",
+                        "nullable": true
+                      },
+                      "transactionHash": {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{64}$",
+                        "description": "DATA, 32 Bytes - hash of the transactions this log was created from. null when its pending log.",
+                        "nullable": true
+                      },
+                      "blockHash": {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{64}$",
+                        "description": "DATA, 32 Bytes - hash of the block where this log was in. null when its pending. null when its pending log.",
+                        "nullable": true
+                      },
+                      "blockNumber": {
+                        "type": "string",
+                        "description": "QUANTITY - the block number where this log was in. null when its pending. null when its pending log.",
+                        "nullable": true
+                      },
+                      "address": {
+                        "type": "string",
+                        "pattern": "^0x[a-fA-F0-9]{40}$",
+                        "description": "DATA, 20 Bytes - address from which this log originated."
+                      },
+                      "data": {
+                        "type": "string",
+                        "description": "DATA - contains zero or more 32 Bytes non-indexed arguments of the log."
+                      },
+                      "topics": {
+                        "type": "array",
+                        "description": "Array of DATA - Array of 0 to 4 32 Bytes DATA of indexed log arguments. (In solidity: The first topic is the hash of the signature of the event (e.g. Deposit(address,bytes32,uint256)), except you declared the event with the anonymous specifier.)",
+                        "items": [
+                          {
+                            "type": "string",
+                            "pattern": "^0x[a-fA-F0-9]{64}$",
+                            "description": "DATA, 32 Bytes - Indexed log arguments."
+                          }
+                        ],
+                        "minItems": 0,
+                        "maxItems": 4
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "example": [
+              {
+                "logIndex": "0x1",
+                "blockNumber": "0x1b4",
+                "blockHash": "0x8216c5785ac562ff41e2dcfdf5785ac562ff41e2dcfdf829c5a142f1fccd7d",
+                "transactionHash": "0xdf829c5a142f1fccd7d8216c5785ac562ff41e2dcfdf5785ac562ff41e2dcf",
+                "transactionIndex": "0x0",
+                "address": "0x16c5785ac562ff41e2dcfdf829c5a142f1fccd7d",
+                "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "topics": [
+                  "0x59ebeb90bc63057b6515673c3ecf9438e5058bca0f92585014eced636878c9a5"
+                ]
+              }
+            ]
+          }
+        },
+        "required": ["jsonrpc", "id", "result"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
+      }
+    }
+  }
+}
