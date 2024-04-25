@@ -54,9 +54,6 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/SuccessResponse"
-                    },
-                    {
                       "$ref": "#/components/schemas/ErrorResponse"
                     }
                   ]
