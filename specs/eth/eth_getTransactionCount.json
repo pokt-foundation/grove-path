@@ -1,22 +1,21 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Ethereum JSON-RPC API",
-    "description": "This OpenAPI specification outlines the `eth_getTransactionCount` method, which provides the number of transactions sent from a specified address.",
+    "title": "Ethereum RPC API",
+    "description": "Ethereum blockchain JSON-RPC API spec designed for the `eth_getTransactionCount` method.",
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "https://mainnet.infura.io/v3/{infura_project_id}",
-      "description": "Main Ethereum Network"
+      "url": "https://eth-mainnet.rpc.grove.city/v1/7ebb2846",
+      "description": "Ethereum Mainnet RPC Server"
     }
   ],
   "paths": {
     "/": {
       "post": {
-        "operationId": "getTransactionCount",
-        "summary": "Get transaction count",
-        "tags": ["Ethereum JSON-RPC"],
+        "operationId": "eth_getTransactionCount",
+        "summary": "Returns the number of transactions sent from an address.",
         "requestBody": {
           "required": true,
           "content": {
@@ -26,64 +25,144 @@
                 "properties": {
                   "jsonrpc": {
                     "type": "string",
-                    "default": "2.0"
+                    "example": "2.0"
                   },
                   "method": {
                     "type": "string",
-                    "default": "eth_getTransactionCount"
+                    "enum": ["eth_getTransactionCount"],
+                    "example": "eth_getTransactionCount"
                   },
                   "params": {
                     "type": "array",
                     "items": [
                       {
                         "type": "string",
-                        "description": "Address to check for transaction count."
+                        "pattern": "^0x[a-fA-F0-9]{40}$",
+                        "description": "DATA, 20 Bytes - address."
                       },
                       {
-                        "type": "string",
-                        "description": "Block specifier, can be a block number or one of 'earliest', 'latest', or 'pending'."
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "HEX String - an integer block number"
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "latest",
+                              "earliest",
+                              "pending",
+                              "safe",
+                              "finalized"
+                            ],
+                            "description": "Block parameter (e.g., 'latest', 'earliest', block number in hex)."
+                          }
+                        ]
                       }
                     ],
+                    "minItems": 2,
+                    "maxItems": 2,
                     "example": [
                       "0x407d73d8a49eeb85d32cf465507dd71d507100c1",
                       "latest"
                     ]
                   },
                   "id": {
-                    "type": "integer",
-                    "format": "int32"
+                    "$ref": "#/components/schemas/IdType"
                   }
-                }
+                },
+                "required": ["jsonrpc", "method", "params", "id"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful response with the number of transactions",
+            "description": "A JSON object containing the number of transactions in the specified block",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "jsonrpc": {
-                      "type": "string",
-                      "default": "2.0"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
                     },
-                    "id": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "result": {
-                      "type": "string",
-                      "description": "The number of transactions sent from the address."
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
                     }
-                  }
+                  ]
                 }
               }
             }
           }
         }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IdType": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "example": 1
+          },
+          {
+            "type": "string",
+            "example": "myId"
+          }
+        ]
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "description": "QUANTITY - integer of the number of transactions send from this address.",
+        "properties": {
+          "jsonrpc": {
+            "type": "string"
+          },
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "result": {
+            "type": "string",
+            "example": "0x1"
+          }
+        },
+        "required": ["jsonrpc", "id", "result"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/IdType"
+          },
+          "jsonrpc": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "string",
+                "example": "Method not found"
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["id", "jsonrpc", "error"]
       }
     }
   }
